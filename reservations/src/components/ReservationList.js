@@ -72,7 +72,7 @@ function ReservationList() {
                     to={`/post/${reservation.resID}`}
                     className="btn btn-light text-dark border-dark"
                   >
-                    View Details
+                    Manage Reservation
                   </Link>
                 </div>
               </div>

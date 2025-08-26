@@ -45,9 +45,11 @@ function ReservationForm() {
       if (error.response && error.response.data && error.response.data.message) {
         // Show backend message to user
         setError(error.response.data.message);
+        setIsLoading(false);
       } else {
         // Fallback generic message
         setError("There was an error creating the post. Please try again.");
+        setIsLoading(false);
       }
     }
   };
