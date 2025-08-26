@@ -40,8 +40,15 @@ function ReservationForm() {
       console.log(response.data);
       navigate('/');
     } catch (error) {
-      console.error('There was an error creating the post!', error);
-      setError('There was an error creating the post. Please try again.');
+      console.error("Error creating reservation:", error);
+
+      if (error.response && error.response.data && error.response.data.message) {
+        // Show backend message to user
+        setError(error.response.data.message);
+      } else {
+        // Fallback generic message
+        setError("There was an error creating the post. Please try again.");
+      }
     }
   };
 

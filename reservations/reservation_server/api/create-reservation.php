@@ -41,6 +41,23 @@ $reservationTime = htmlspecialchars(strip_tags($data['reservationTime']));
 // Default isBooked
 $isBooked = 0;
 
+$checkStmt = $conn->prepare(
+    "SELECT * FROM reservations WHERE reservationName = ? AND reservationTime = ?"
+);
+$checkStmt->bind_param("ss", $reservationName, $reservationTime);
+$checkStmt->execute();
+$result = $checkStmt->get_result();
+
+if ($result->num_rows > 0) {
+    http_response_code(409);
+    echo json_encode([
+      "message" => "This reservation area and time already exists",
+    ]);
+    exit();
+}
+
+
+
 // Prepare SQL
 $stmt = $conn->prepare('INSERT INTO reservations (reservationName, reservationTime, isBooked) VALUES (?, ?, ?)');
 if (!$stmt) {
