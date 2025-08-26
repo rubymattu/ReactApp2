@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import './ReservationList.css';
+
 
 function ReservationList() {
   const [reservations, setReservations] = useState([]);
@@ -86,7 +88,7 @@ function ReservationList() {
         <nav aria-label="Page navigation">
           <ul className="pagination justify-content-center mt-4">
             <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-              <button className="page-link" onClick={goToPreviousPage}>
+              <button className="page-link text-dark" onClick={goToPreviousPage}>
                 Previous
               </button>
             </li>
@@ -94,12 +96,9 @@ function ReservationList() {
             {Array.from({ length: totalPages }, (_, index) => (
               <li
                 key={index + 1}
-                className={`page-item ${
-                  currentPage === index + 1 ? "active" : ""
-                }`}
-              >
+                className="page-item">
                 <button
-                  className="page-link"
+                  className={`page-link ${currentPage === index + 1 ? "custom-active" : "text-dark"}`}
                   onClick={() => setCurrentPage(index + 1)}
                 >
                   {index + 1}
@@ -112,7 +111,7 @@ function ReservationList() {
                 currentPage === totalPages ? "disabled" : ""
               }`}
             >
-              <button className="page-link" onClick={goToNextPage}>
+              <button className="page-link text-dark" onClick={goToNextPage}>
                 Next
               </button>
             </li>

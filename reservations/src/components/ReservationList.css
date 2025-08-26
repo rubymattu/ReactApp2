@@ -1,0 +1,5 @@
+.page-item .page-link.custom-active {
+  background-color: black !important;
+  color: white !important;
+  border-color: black !important;
+}
