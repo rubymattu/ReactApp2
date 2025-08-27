@@ -68,8 +68,15 @@ function ReservationList() {
                   <p className="card-text">
                     Time Slot: {reservation.reservationTime}
                   </p>
+                  <p className="card-text">
+                    Status: {reservation.isBooked === "0" ? (
+                    <span className="text-success">Available</span>
+                    ) : (
+                    <span className="text-danger">Booked</span>
+                  )}</p>
+
                   <Link
-                    to={`/post/${reservation.resID}`}
+                    to={`/reservation/${reservation.resID}`}
                     className="btn btn-light text-dark border-dark"
                   >
                     Manage Reservation

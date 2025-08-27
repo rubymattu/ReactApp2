@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'; // npm install 
 import './App.css';
 import Navbar from './components/Navbar';
 import CreateReservation from './components/CreateReservation';
-// import Post from './components/Reservation';
+import ManageReservation from './components/ManageReservation';
 import ReservationList from './components/ReservationList';
  
 function App() {
@@ -14,7 +14,7 @@ function App() {
         <Routes>
           <Route path={"/"} element={<ReservationList />} />
           <Route path={"/create-reservation"} element={<CreateReservation/>} />
-          {/* <Route path={"/reservation/:id"} element={<Reservation />} /> */}
+          <Route path={"/reservation/:resID"} element={<ManageReservation />} />
         </Routes>
       </BrowserRouter>
     </div>
