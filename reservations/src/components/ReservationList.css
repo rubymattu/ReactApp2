@@ -3,3 +3,38 @@
   color: white !important;
   border-color: black !important;
 }
+
+/* styles.css */
+.delete-btn {
+  background-color: #525252;
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+  margin-left: 20px;
+  border: 1px solid #525252;
+}
+
+.delete-btn:hover {
+  background-color: #fff;
+  color: #9f0202;
+  border: 1px solid #9f0202;
+}
+.green-button {
+  background-color: green;
+  color: white;
+  border-radius: 6px;
+  border: 1px solid green;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.green-button:hover {
+  background-color: white;
+  color: green;
+  border: 1px solid green;
+}

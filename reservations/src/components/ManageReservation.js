@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 const ManageReservation = () => {
   const { resID } = useParams();
@@ -8,6 +9,7 @@ const ManageReservation = () => {
   const [status, setStatus] = useState("available");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const navigate = useNavigate();
 
   // Fetch reservation details
   const fetchReservation = async () => {
@@ -42,9 +44,10 @@ const ManageReservation = () => {
         }
       );
 
-      const message = response.data?.message || "Update complete";
+      //const message = response.data?.message || "Update complete";
       //alert(message);
       fetchReservation(); // Refresh data after update
+      navigate('/');
     } catch (error) {
       console.error("Failed to update reservation:", error);
       alert("Failed to update status");

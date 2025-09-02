@@ -50,6 +50,32 @@ function ReservationList() {
   const goToNextPage = () =>
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
+    // Delete reservation handler
+  const handleDelete = async (resID) => {
+    if (!window.confirm("Are you sure you want to delete this reservation?")) return;
+
+    try {
+      const response = await axios.post(
+        "http://localhost/reactapp2/reservations/reservation_server/api/delete-reservation.php",
+        { id: resID }
+      );
+
+      alert(response.data.message);
+
+      // Remove deleted reservation from state
+      setReservations((prev) => prev.filter((res) => res.resID !== resID));
+      setTotalReservations((prev) => prev - 1);
+
+      // Adjust current page if necessary
+      if (reservations.length === 1 && currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete reservation.");
+    }
+  };
+
   return (
     <div className="container mt-5">
       <h2 className="mb-5 text-center">Recent Reservations</h2>
@@ -77,10 +103,17 @@ function ReservationList() {
 
                   <Link
                     to={`/reservation/${reservation.resID}`}
-                    className="btn btn-light text-dark border-dark"
+                    className="green-button"
                   >
                     Manage Reservation
                   </Link>
+                  <button
+                    to={`/reservation/${reservation.resID}`}
+                    className="delete-btn"
+                    onClick={() => handleDelete(reservation.resID)}      
+                  >
+                    Delete Reservation
+                  </button>
                 </div>
               </div>
             </div>
