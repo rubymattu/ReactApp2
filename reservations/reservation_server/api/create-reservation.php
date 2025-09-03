@@ -38,6 +38,35 @@ if (empty($data['reservationName']) || empty($data['reservationTime'])) {
 $reservationName = htmlspecialchars(strip_tags($data['reservationName']));
 $reservationTime = htmlspecialchars(strip_tags($data['reservationTime']));
 
+// Handle file upload (optional)
+$imageName = null;
+$uploadDir = __DIR__ . '/uploads/';
+
+if (!empty($_FILES['image']['name'])) {
+    $originalName = basename($_FILES['image']['name']);
+    $targetFilePath = $uploadDir . $originalName;
+
+    // Check if file already exists
+    if (file_exists($targetFilePath)) {
+        http_response_code(400);
+        echo json_encode(['message' => 'File already exists: ' . $originalName]);
+        exit();
+    }
+
+    if (!move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
+        http_response_code(500);
+        echo json_encode([
+            'message' => 'Error uploading file',
+            'php_error' => $_FILES['image']['error']
+        ]);
+        exit();
+    }
+
+    $imageName = $originalName;
+} else {
+    $imageName = 'placeholder.jpg';
+}
+
 // Default isBooked
 $isBooked = 0;
 
@@ -59,14 +88,14 @@ if ($result->num_rows > 0) {
 
 
 // Prepare SQL
-$stmt = $conn->prepare('INSERT INTO reservations (reservationName, reservationTime, isBooked) VALUES (?, ?, ?)');
+$stmt = $conn->prepare('INSERT INTO reservations (imageName, reservationName, reservationTime, isBooked) VALUES (?, ?, ?,?)');
 if (!$stmt) {
     http_response_code(500);
     echo json_encode(['message' => 'Prepare failed: ' . $conn->error]);
     exit();
 }
 
-$stmt->bind_param('ssi', $reservationName, $reservationTime, $isBooked);
+$stmt->bind_param('sssi', $imageName, $reservationName, $reservationTime, $isBooked);
 
 if ($stmt->execute()) {
     $id = $stmt->insert_id;
@@ -74,6 +103,7 @@ if ($stmt->execute()) {
     echo json_encode([
         'message' => 'Reservation created successfully',
         'res\ID' => $id,
+        'imageName' => $imageName,
         'reservationName' => $reservationName,
         'reservationTime' => $reservationTime,
         'isBooked' => $isBooked

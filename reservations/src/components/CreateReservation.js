@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function ReservationForm() {
+
+  const [image, setImage] = React.useState(null);
   const [reservationName, setReservationName] = React.useState("");
   const [reservationTime, setReservationTime] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
@@ -28,11 +30,18 @@ function ReservationForm() {
       return;
     }
 
+    const formData = new FormData();
+    formData.append("reservationName", reservationName);
+    formData.append("reservationTime", reservationTime);
+    if (image) {
+      formData.append("image", image);
+    }
+
     setIsLoading(true);
 
     try {
       const response = await axios.post("http://localhost/reactapp2/reservations/reservation_server/api/create-reservation.php"
-, {
+, {     image,
         reservationName,
         reservationTime,
         isBooked: false
@@ -55,9 +64,9 @@ function ReservationForm() {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100">
+    <div className="d-flex justify-content-center align-items-center mt-5">
       <form
-        className="px-5 py-5 border rounded shadow"
+        className="px-5 py-5 border rounded shadow mt-5"
         style={{ minWidth: "800px", minHeight: "400px" }}
         onSubmit={handleSubmit}
       >
@@ -65,7 +74,7 @@ function ReservationForm() {
         {error && <div className="alert alert-danger">{error}</div>}
 
         {/* Name Field */}
-        <div className="row mb-5 align-items-center">
+        <div className="row mb-4 align-items-center">
           <label htmlFor="reservationName" className="col-sm-4 col-form-label">
             Reservation Name:
           </label>
@@ -83,7 +92,7 @@ function ReservationForm() {
         </div>
 
         {/* Time Slot Field */}
-        <div className="row mb-3 align-items-center">
+        <div className="row mb-4 align-items-center">
           <label htmlFor="reservationTime" className="col-sm-4 col-form-label">
             Reservation Time:
           </label>
@@ -100,6 +109,30 @@ function ReservationForm() {
               <option value="12:00 noon - 3:00 pm">12:00 Noon - 3:00 PM</option>
               <option value="3:00pm - 6:00 pm">3:00 PM - 6:00 PM</option>
             </select>
+          </div>
+        </div>
+
+        {/* Image Upload */}
+        <div className="row mb-3 align-items-center">
+          <label htmlFor="image" className="col-sm-4 col-form-label">
+            Upload Image:
+          </label>
+          <div className="col-sm-8">
+            <input
+              type="file"
+              className="form-control"
+              id="image"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])} // Save uploaded file
+            />
+            {image && (
+              <img
+                src={URL.createObjectURL(image)} // Preview uploaded file
+                alt="Preview"
+                className="img-thumbnail mt-2"
+                style={{ maxWidth: "150px" }}
+              />
+            )}
           </div>
         </div>
 
