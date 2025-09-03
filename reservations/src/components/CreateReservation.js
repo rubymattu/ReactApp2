@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function ReservationForm() {
-
   const [image, setImage] = React.useState(null);
   const [reservationName, setReservationName] = React.useState("");
   const [reservationTime, setReservationTime] = React.useState("");
@@ -14,17 +13,17 @@ function ReservationForm() {
 
   // Function to handle form validation
   const validateForm = () => {
-    if (!reservationName.trim) {
-      setError('All fields are required.');
+    if (!reservationName.trim() || !reservationTime.trim()) {
+      setError("All fields are required.");
       return false;
     }
-    setError('');
+    setError("");
     return true;
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear errors from previous submissions
+    setError(""); // Clear old errors
 
     if (!validateForm()) {
       return;
@@ -40,26 +39,30 @@ function ReservationForm() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("http://localhost/reactapp2/reservations/reservation_server/api/create-reservation.php"
-, {     image,
-        reservationName,
-        reservationTime,
-        isBooked: false
-      });
-      console.log(response.data);
-      navigate('/');
-    } catch (error) {
-      console.error("Error creating reservation:", error);
+      const response = await axios.post(
+        "http://localhost/reactapp2/reservations/reservation_server/api/create-reservation.php",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
-      if (error.response && error.response.data && error.response.data.message) {
-        // Show backend message to user
+      console.log("✅ Reservation created:", response.data);
+
+      // Reset form after success
+      setReservationName("");
+      setReservationTime("");
+      setImage(null);
+
+      navigate("/"); // Go back to list
+    } catch (error) {
+      console.error("❌ Error creating reservation:", error);
+
+      if (error.response?.data?.message) {
         setError(error.response.data.message);
-        setIsLoading(false);
       } else {
-        // Fallback generic message
-        setError("There was an error creating the post. Please try again.");
-        setIsLoading(false);
+        setError("There was an error creating the reservation. Please try again.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -67,7 +70,7 @@ function ReservationForm() {
     <div className="d-flex justify-content-center align-items-center mt-5">
       <form
         className="px-5 py-5 border rounded shadow mt-5"
-        style={{ minWidth: "800px", minHeight: "400px" }}
+        style={{ maxWidth: "800px", minHeight: "400px" }}
         onSubmit={handleSubmit}
       >
         <h3 className="text-center mb-5">Add Reservation</h3>
@@ -123,11 +126,11 @@ function ReservationForm() {
               className="form-control"
               id="image"
               accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])} // Save uploaded file
+              onChange={(e) => setImage(e.target.files[0])}
             />
             {image && (
               <img
-                src={URL.createObjectURL(image)} // Preview uploaded file
+                src={URL.createObjectURL(image)}
                 alt="Preview"
                 className="img-thumbnail mt-2"
                 style={{ maxWidth: "150px" }}

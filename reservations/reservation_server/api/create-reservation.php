@@ -16,42 +16,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// Get raw JSON input
-$request_body = file_get_contents('php://input');
-$data = json_decode($request_body, true);
-
-// Validate JSON
-if ($data === null) {
-    http_response_code(400);
-    echo json_encode(['message' => 'Invalid JSON or empty request body']);
-    exit();
-}
+// ✅ Get values from form-data instead of JSON
+$reservationName = isset($_POST['reservationName']) ? htmlspecialchars(strip_tags($_POST['reservationName'])) : '';
+$reservationTime = isset($_POST['reservationTime']) ? htmlspecialchars(strip_tags($_POST['reservationTime'])) : '';
 
 // Validate required fields
-if (empty($data['reservationName']) || empty($data['reservationTime'])) {
+if (empty($reservationName) || empty($reservationTime)) {
     http_response_code(400);
     echo json_encode(['message' => 'Missing required parameters']);
     exit();
 }
 
-// Sanitize
-$reservationName = htmlspecialchars(strip_tags($data['reservationName']));
-$reservationTime = htmlspecialchars(strip_tags($data['reservationTime']));
-
-// Handle file upload (optional)
-$imageName = null;
+// Handle file upload
+$imageName = 'placeholder.jpg';
 $uploadDir = __DIR__ . '/uploads/';
 
 if (!empty($_FILES['image']['name'])) {
-    $originalName = basename($_FILES['image']['name']);
+    $originalName = basename($_FILES['image']['name']); // avoid overwrites
     $targetFilePath = $uploadDir . $originalName;
-
-    // Check if file already exists
-    if (file_exists($targetFilePath)) {
-        http_response_code(400);
-        echo json_encode(['message' => 'File already exists: ' . $originalName]);
-        exit();
-    }
 
     if (!move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
         http_response_code(500);
@@ -63,13 +45,12 @@ if (!empty($_FILES['image']['name'])) {
     }
 
     $imageName = $originalName;
-} else {
-    $imageName = 'placeholder.jpg';
 }
 
 // Default isBooked
 $isBooked = 0;
 
+// Check for duplicates
 $checkStmt = $conn->prepare(
     "SELECT * FROM reservations WHERE reservationName = ? AND reservationTime = ?"
 );
@@ -85,10 +66,8 @@ if ($result->num_rows > 0) {
     exit();
 }
 
-
-
-// Prepare SQL
-$stmt = $conn->prepare('INSERT INTO reservations (imageName, reservationName, reservationTime, isBooked) VALUES (?, ?, ?,?)');
+// Insert into DB
+$stmt = $conn->prepare('INSERT INTO reservations (imageName, reservationName, reservationTime, isBooked) VALUES (?, ?, ?, ?)');
 if (!$stmt) {
     http_response_code(500);
     echo json_encode(['message' => 'Prepare failed: ' . $conn->error]);
@@ -102,7 +81,7 @@ if ($stmt->execute()) {
     http_response_code(201);
     echo json_encode([
         'message' => 'Reservation created successfully',
-        'res\ID' => $id,
+        'resID' => $id,
         'imageName' => $imageName,
         'reservationName' => $reservationName,
         'reservationTime' => $reservationTime,
