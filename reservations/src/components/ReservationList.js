@@ -65,6 +65,7 @@ function ReservationList() {
       // Remove deleted reservation from state
       setReservations((prev) => prev.filter((res) => res.resID !== resID));
       setTotalReservations((prev) => prev - 1);
+      window.location.reload();
 
       // Adjust current page if necessary
       if (reservations.length === 1 && currentPage > 1) {
