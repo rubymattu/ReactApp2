@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import CreateReservation from './components/CreateReservation';
 import ManageReservation from './components/ManageReservation';
 import ReservationList from './components/ReservationList';
+import Register from './components/Register';
  
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <BrowserRouter>
         <Navbar />
         <Routes>
+          <Route path="/register" element={<Register />} />
           <Route path={"/"} element={<ReservationList />} />
           <Route path={"/create-reservation"} element={<CreateReservation/>} />
           <Route path={"/reservation/:resID"} element={<ManageReservation />} />
