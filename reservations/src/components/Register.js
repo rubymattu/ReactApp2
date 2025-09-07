@@ -19,7 +19,9 @@ function Register() {
     try {
       const res = await axios.post(
         `http://localhost/reactapp2/reservations/reservation_server/api/register.php`,
-        { userName, emailAddress, password }
+        {
+          withCredentials: true
+        }
       );
       console.log("Response from PHP:", res.data);
 

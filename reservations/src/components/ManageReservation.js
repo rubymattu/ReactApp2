@@ -16,7 +16,10 @@ const ManageReservation = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost/reactapp2/reservations/reservation_server/api/manage-reservation.php/${resID}`
+        `http://localhost/reactapp2/reservations/reservation_server/api/manage-reservation.php/${resID}`,
+        {
+            withCredentials: true
+          }
       );
 
       const reservationData = response.data?.data;
@@ -54,7 +57,7 @@ const ManageReservation = () => {
 
   useEffect(() => {
     fetchReservation();
-  }, []); // run only on mount
+  }); 
 
   if (loading) return <div>Loading reservation...</div>;
 

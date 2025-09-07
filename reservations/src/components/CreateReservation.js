@@ -42,10 +42,11 @@ function ReservationForm() {
       const response = await axios.post(
         "http://localhost/reactapp2/reservations/reservation_server/api/create-reservation.php",
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        { withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      console.log("✅ Reservation created:", response.data);
+      console.log("Reservation created:", response.data);
 
       // Reset form after success
       setReservationName("");
@@ -54,7 +55,7 @@ function ReservationForm() {
 
       navigate("/"); // Go back to list
     } catch (error) {
-      console.error("❌ Error creating reservation:", error);
+      console.error("Error creating reservation:", error);
 
       if (error.response?.data?.message) {
         setError(error.response.data.message);

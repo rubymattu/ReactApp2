@@ -7,16 +7,18 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
+header("Access-Control-Allow-Credentials: true");
 
 require_once('../config/config.php');
 require_once('../config/database.php');
+require_once 'auth.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-// ✅ Get values from form-data instead of JSON
+// Get values from form-data instead of JSON
 $reservationName = isset($_POST['reservationName']) ? htmlspecialchars(strip_tags($_POST['reservationName'])) : '';
 $reservationTime = isset($_POST['reservationTime']) ? htmlspecialchars(strip_tags($_POST['reservationTime'])) : '';
 
