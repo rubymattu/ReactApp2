@@ -1,11 +1,20 @@
-import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { AuthContext } from "../context/AuthContext";
+
  
 const Navbar = () => {
     const location = useLocation();
+    const { user, setUser } = useContext(AuthContext);
+    const navigate = useNavigate();
 
   // Hide links on login or register page
   const hideLinks = location.pathname === "/login" || location.pathname === "/register";
+  const handleLogout = () => {
+    setUser(null); // clear user
+    navigate("/login");
+  };
+  
   return(
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
@@ -36,11 +45,53 @@ const Navbar = () => {
                 to="/create-reservation">Add Reservation 
               </NavLink>            
             </li>
+              {/* Username dropdown */}
+                {user && (
+                  <li className="nav-item dropdown">
+                    <span
+                      className="nav-link dropdown-toggle username-link"
+                      id="userDropdown"
+                      role="button"
+                    >
+                      Hi {user.userName}!
+                    </span>
+                    <ul
+                      className="dropdown-menu dropdown-menu-end"
+                      aria-labelledby="userDropdown"
+                    >
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={handleLogout}
+                        >
+                          Logout
+                        </button>
+                      </li>
+                    </ul>
+                  </li>
+                )}
           </ul>
         </div>
         </>
         )}
       </div>
+      {/* Extra CSS for hover effect */}
+      <style>
+        {`
+          .nav-item.dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0; /* aligns dropdown */
+          }
+          .dropdown-toggle::after {
+            display: none; /* hide caret if you don’t want it */
+          }
+          .username-link {
+            font-weight: 600;
+            color: #86c8ffff !important; /* Bootstrap warning color (gold) */
+            cursor: pointer;
+          }
+        `}
+      </style>
     </nav>
   );
 };

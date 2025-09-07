@@ -14,8 +14,8 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Navbar />
         <AuthProvider>
+        <Navbar />
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
