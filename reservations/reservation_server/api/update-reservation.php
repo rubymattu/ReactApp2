@@ -1,47 +1,74 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
+// CORS headers
 header("Access-Control-Allow-Origin: http://localhost:3000");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Methods: POST, OPTIONS, GET");
 header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
 header("Access-Control-Allow-Credentials: true");
+header("Content-Type: application/json");
 
+// Handle preflight first
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
+session_start();
+
+require_once('../config/config.php');
 require_once('../config/database.php');
 require_once 'auth.php';
 
+// Session / auth check
+if (!isset($_SESSION['user'])) {
+    http_response_code(401);
+    echo json_encode(["status" => "error", "message" => "Unauthorized"]);
+    exit;
+}
+
+// Get POST data
 $data = json_decode(file_get_contents('php://input'), true);
 
-if (!isset($data['id']) || !isset($data['status'])) {
-    echo json_encode(['status' => 'error', 'message' => 'Invalid input']);
+// Validate input
+if (!isset($data['id'], $data['reservationName'], $data['reservationTime'], $data['isBooked'])) {
+    echo json_encode(['status' => 'error', 'message' => 'Missing fields']);
     exit();
 }
 
-$id = $data['id'];
-$status = $data['status'];
+$id = intval($data['id']);
+$reservationName = trim($data['reservationName']);
+$reservationTime = trim($data['reservationTime']);
+$isBooked = intval($data['isBooked']); // 0 or 1
 
-$valid_statuses = ['available', 'booked'];
-if (!in_array($status, $valid_statuses)) {
-    echo json_encode(['status' => 'error', 'message' => 'Invalid status']);
+if (!in_array($isBooked, [0,1])) {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid booking status']);
     exit();
 }
 
-$isBooked = $status === 'booked' ? 1 : 0;
+// Prevent duplicates
+$check = $conn->prepare("SELECT resID FROM reservations WHERE reservationName = ? AND reservationTime = ? AND resID != ?");
+$check->bind_param("ssi", $reservationName, $reservationTime, $id);
+$check->execute();
+$check->store_result();
 
-$stmt = $conn->prepare("UPDATE reservations SET isBooked = ? WHERE resID = ?");
-$stmt->bind_param("ii", $isBooked, $id);
+if ($check->num_rows > 0) {
+    echo json_encode(['status' => 'error', 'message' => 'A reservation with the same name and time already exists']);
+    $check->close();
+    $conn->close();
+    exit();
+}
+$check->close();
+
+// Update
+$stmt = $conn->prepare("UPDATE reservations SET reservationName = ?, reservationTime = ?, isBooked = ? WHERE resID = ?");
+$stmt->bind_param("ssii", $reservationName, $reservationTime, $isBooked, $id);
 
 if ($stmt->execute()) {
-    echo json_encode(['status' => 'success', 'message' => 'Status updated successfully']);
+    echo json_encode(['status' => 'success', 'message' => 'Reservation updated successfully']);
+    exit;
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Failed to update status']);
+    echo json_encode(['status' => 'error', 'message' => 'Failed to update reservation']);
+    exit;
 }
 
 $stmt->close();

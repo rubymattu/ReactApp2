@@ -111,7 +111,7 @@ function ReservationForm() {
               <option value="">-- Choose a time slot --</option>
               <option value="9:00 am - 12:00 noon">9:00 AM - 12:00 Noon</option>
               <option value="12:00 noon - 3:00 pm">12:00 Noon - 3:00 PM</option>
-              <option value="3:00pm - 6:00 pm">3:00 PM - 6:00 PM</option>
+              <option value="3:00 pm - 6:00 pm">3:00 PM - 6:00 PM</option>
             </select>
           </div>
         </div>
