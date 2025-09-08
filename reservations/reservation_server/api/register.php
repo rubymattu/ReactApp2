@@ -5,12 +5,19 @@
   header("Access-Control-Allow-Origin: http://localhost:3000");  // Or specify your frontend domain
   header("Access-Control-Allow-Methods: POST, OPTIONS");
   header("Access-Control-Allow-Headers: Content-Type");
+  header("Access-Control-Allow-Credentials: true");
   header("Content-Type: application/json");
 
   require_once('../config/config.php');
   require_once('../config/database.php');;
 
-  $data = json_decode(file_get_contents("php://input"), true);
+  if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+  http_response_code(200);
+  exit;
+}
+
+ $data = json_decode(file_get_contents("php://input"), true);
+
 
   if (!isset($data['userName'], $data['password'], $data['emailAddress'])) {
     echo json_encode(["success" => false, "message" => "Missing fields"]);
@@ -29,6 +36,18 @@
 
   if ($check->num_rows > 0) {
     echo json_encode(["success" => false, "message" => "Username already taken"]);
+    exit;
+  }
+  $check->close();
+
+   // Check if email already exists
+  $check = $conn->prepare("SELECT registrationID FROM registrations WHERE emailAddress = ?");
+  $check->bind_param("s", $emailAddress);
+  $check->execute();
+  $check->store_result();
+
+  if ($check->num_rows > 0) {
+    echo json_encode(["success" => false, "message" => "Email already taken"]);
     exit;
   }
   $check->close();
