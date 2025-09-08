@@ -11,28 +11,30 @@ function ReservationList() {
   const [totalReservations, setTotalReservations] = useState(0);
   const reservationsPerPage = 4;
 
-    const fetchReservations = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get(
-          `http://localhost/reactapp2/reservations/reservation_server/api/reservations.php`,
-          { withCredentials: true }
-        );
+  const fetchReservations = async () => {
+  setIsLoading(true);
+  try {
+    const response = await axios.get(
+      `http://localhost/reactapp2/reservations/reservation_server/api/reservations.php?page=${currentPage}`,
+      { withCredentials: true }
+    );
 
-        if (response.data.reservations) {
-          setReservations(response.data.reservations);
-          setTotalReservations(Number(response.data.totalReservations) || 0);
-        } else {
-          setReservations([]);
-          setTotalReservations(0);
-        }
-        setIsLoading(false);
-      } catch (err) {
-        console.error("Error fetching reservations:", err);
-        setError("There was an error fetching the reservations. Please try again later.");
-        setIsLoading(false);
-      }
-    };
+    if (response.data.reservations) {
+      setReservations(response.data.reservations);
+      setTotalReservations(Number(response.data.totalReservations) || 0);
+    } else {
+      setReservations([]);
+      setTotalReservations(0);
+    }
+  } catch (err) {
+    console.error("Error fetching reservations:", err);
+    setError(
+      "There was an error fetching the reservations. Please try again later."
+    );
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   useEffect(() => { fetchReservations();
   }, [currentPage]);
