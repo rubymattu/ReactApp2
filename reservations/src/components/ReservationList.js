@@ -11,7 +11,6 @@ function ReservationList() {
   const [totalReservations, setTotalReservations] = useState(0);
   const reservationsPerPage = 4;
 
-  useEffect(() => {
     const fetchReservations = async () => {
       setIsLoading(true);
       try {
@@ -35,36 +34,47 @@ function ReservationList() {
       }
     };
 
-    fetchReservations();
+  useEffect(() => { fetchReservations();
   }, [currentPage]);
+
+
 
   const totalPages = Math.ceil(totalReservations / reservationsPerPage);
   const goToPreviousPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
   const goToNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
+  
   const handleDelete = async (resID) => {
-    if (!window.confirm("Are you sure you want to delete this reservation?")) return;
+  if (!window.confirm("Are you sure you want to delete this reservation?")) return;
 
-    try {
-      const response = await axios.post(
-        "http://localhost/reactapp2/reservations/reservation_server/api/delete-reservation.php",
-        { id: resID },
-        { withCredentials: true }
-      );
+  try {
+    const response = await axios.post(
+      "http://localhost/reactapp2/reservations/reservation_server/api/delete-reservation.php",
+      { id: resID },
+      { withCredentials: true }
+    );
 
-      alert(response.data.message);
-      window.location.reload();
-      setReservations((prev) => prev.filter((res) => res.resID !== resID));
-      setTotalReservations((prev) => prev - 1);
+    alert(response.data.message);
 
-      if (reservations.length === 1 && currentPage > 1) {
-        setCurrentPage(currentPage - 1);
-      }
-    } catch (err) {
-      console.error("Delete error:", err);
-      alert("Failed to delete reservation.");
+    // Re-fetch reservations AFTER deletion
+    const res = await axios.get(
+      `http://localhost/reactapp2/reservations/reservation_server/api/reservations.php`,
+      { withCredentials: true }
+    );
+
+    setReservations(res.data.reservations || []);
+    setTotalReservations(Number(res.data.totalReservations) || 0);
+
+    // Adjust page if current page is now empty
+    if ((res.data.reservations || []).length === 0 && currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
     }
-  };
+
+  } catch (err) {
+    console.error("Delete error:", err);
+    alert("Failed to delete reservation.");
+  }
+};
 
   return (
     <div className="container mt-5">

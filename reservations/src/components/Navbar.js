@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from "../context/AuthContext";
+import axios from "axios";
 
  
 const Navbar = () => {
@@ -10,7 +11,11 @@ const Navbar = () => {
 
   // Hide links on login or register page
   const hideLinks = location.pathname === "/login" || location.pathname === "/register";
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await axios.post("http://localhost/reactapp2/reservations/reservation_server/api/logout.php", {}, {
+    withCredentials: true
+  });
+
     setUser(null); // clear user
     navigate("/login");
   };

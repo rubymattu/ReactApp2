@@ -38,7 +38,7 @@ if ($row = $result->fetch_assoc()) {
         echo json_encode([
             "success" => true,
             "message" => "Login successful",
-            "user" => $_SESSION['user']  // send back user
+            "user" => $_SESSION['user']
         ]);
     } else {
         echo json_encode(["success" => false, "message" => "Invalid password"]);

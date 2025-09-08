@@ -10,9 +10,9 @@ export const AuthProvider = ({ children }) => {
 
   // Check if already logged in on mount
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkSession = async () => {
       try {
-        const res = await axios.get(`http://localhost/reactapp2/reservations/reservation_server/api/checkAuth.php`, {
+        const res = await axios.get(`http://localhost/reactapp2/reservations/reservation_server/api/check-session.php`, {
           withCredentials: true
         });
         if (res.data.success) {
@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     };
-    checkAuth();
+    checkSession();
   }, []);
 
   return (
