@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import './ReservationList.css';
+import {useAuth} from "../context/AuthContext";
 
 function ReservationList() {
+  const { user } = useAuth();
   const [reservations, setReservations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -102,15 +104,17 @@ function ReservationList() {
                     )}
                   </p>
 
-                  <Link to={`/reservation/${reservation.resID}`} className="green-button">
-                    Manage Reservation
-                  </Link>
-                  <button
-                    className="delete-btn"
-                    onClick={() => handleDelete(reservation.resID)}
-                  >
-                    Delete Reservation
-                  </button>
+                  {user?.role === 'admin' && (
+                    <>
+                      <Link to={`/reservation/${reservation.resID}`} className="btn btn-success">Update Reservation</Link>
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDelete(reservation.resID)}
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

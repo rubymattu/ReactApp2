@@ -1,8 +1,9 @@
 // src/context/AuthContext.js
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 
 export const AuthContext = createContext();
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -10,9 +11,9 @@ export const AuthProvider = ({ children }) => {
 
   // Check if already logged in on mount
   useEffect(() => {
-    const checkSession = async () => {
+    const checkAuth = async () => {
       try {
-        const res = await axios.get(`http://localhost/reactapp2/reservations/reservation_server/api/check-session.php`, {
+        const res = await axios.get("http://localhost/reactapp2/reservations/reservation_server/api/checkAuth.php", {
           withCredentials: true
         });
         if (res.data.success) {
@@ -26,7 +27,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     };
-    checkSession();
+    checkAuth();
   }, []);
 
   return (

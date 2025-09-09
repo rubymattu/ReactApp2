@@ -23,7 +23,7 @@ $userName = $data['userName'];
 $password = $data['password'];
 
 // Lookup user
-$stmt = $conn->prepare("SELECT registrationID, userName, password, emailAddress FROM registrations WHERE userName = ?");
+$stmt = $conn->prepare("SELECT registrationID, userName, password, emailAddress, role FROM registrations WHERE userName = ?");
 $stmt->bind_param("s", $userName);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -33,12 +33,14 @@ if ($row = $result->fetch_assoc()) {
         $_SESSION['user'] = [
             "registrationID" => $row['registrationID'],
             "userName" => $row['userName'],
-            "emailAddress" => $row['emailAddress']
+            "emailAddress" => $row['emailAddress'],
+            "role" => $row['role'],
         ];
         echo json_encode([
             "success" => true,
             "message" => "Login successful",
-            "user" => $_SESSION['user']
+            "user" => $_SESSION['user'] ,
+            "role" => $_SESSION['user']['role']
         ]);
     } else {
         echo json_encode(["success" => false, "message" => "Invalid password"]);

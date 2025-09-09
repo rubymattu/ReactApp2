@@ -19,11 +19,11 @@ require_once('../config/config.php');
 require_once('../config/database.php');
 require_once 'auth.php';
 
-// Session / auth check
-if (!isset($_SESSION['user'])) {
-    http_response_code(401);
-    echo json_encode(["status" => "error", "message" => "Unauthorized"]);
-    exit;
+  // Only allow admin
+if ($_SESSION['user']['role'] !== 'admin') {
+    http_response_code(403);
+    echo json_encode(["success" => false, "message" => "Forbidden: Admins only"]);
+    exit();
 }
 
 // Get POST data
