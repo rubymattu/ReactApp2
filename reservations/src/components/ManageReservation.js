@@ -134,13 +134,24 @@ const ManageReservation = () => {
               </div>
 
               <button
-                className="btn btn-success"
+                className="btn btn-success me-4"
                 onClick={handleSave}
                 disabled={saving}
               >
                 {saving ? "Updating..." : "Update Reservation"}
               </button>
+
+
+              <button
+                type="button"
+                className="btn btn-secondary me-4"
+                onClick={() => navigate(`/`)} // go back to reservations
+              >
+                Cancel
+              </button>
+              
             </div>
+            
           </div>
 
           {reservation.imageName && (
