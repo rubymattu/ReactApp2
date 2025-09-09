@@ -5,6 +5,7 @@ import axios from "axios";
 
 function Register() {
   const [userName, setUserName] = useState("");
+  const [role, setRole] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -21,6 +22,7 @@ function Register() {
         `http://localhost/reactapp2/reservations/reservation_server/api/register.php`,
         {
           userName,
+          role,
           emailAddress,
           password
         },
@@ -65,6 +67,24 @@ function Register() {
             placeholder="Set Your Username"
             required
           />
+        </div>
+      </div>
+
+      <div className="mb-3 row">
+        <label className="col-sm-4 col-form-label text-end">Role: </label>
+        <div className="col-sm-8">
+           <select
+              id="role"
+              className="form-select"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+            >
+              <option value="">-- Choose a role --</option>
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
+              <option value="guest">Guest</option>
+            </select>
         </div>
       </div>
 
