@@ -6,6 +6,7 @@ import axios from "axios";
 function Register() {
   const [userName, setUserName] = useState("");
   const [role, setRole] = useState("");
+  const [secretKey, setSecretKey] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -23,6 +24,7 @@ function Register() {
         {
           userName,
           role,
+          secretKey,
           emailAddress,
           password
         },
@@ -101,6 +103,25 @@ function Register() {
           />
         </div>
       </div>
+
+      {/* Extra secret password only for admins */}
+        {role === "admin" && (
+          <div className="mb-3 row">
+            <label className="col-sm-4 col-form-label text-end">
+              Admin Secret:
+            </label>
+            <div className="col-sm-8">
+              <input
+                type="password"
+                className="form-control"
+                value={secretKey}
+                onChange={(e) => setSecretKey(e.target.value)}
+                placeholder="Enter the secret Admin Password"
+                required
+              />
+            </div>
+          </div>
+        )}
 
       <div className="mb-4 row">
         <label className="col-sm-4 col-form-label text-end">Password:</label>
